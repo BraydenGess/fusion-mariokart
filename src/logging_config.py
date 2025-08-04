@@ -11,17 +11,13 @@ class NamespaceFilter(logging.Filter):
         self.namespaces = namespaces
 
     def filter(self, record):
-        #return any(
-        #    record.name == ns or record.name.startswith(f"{ns}.")
-        #    for ns in self.namespaces
-        #)
         return any(record.name.startswith(ns) for ns in self.namespaces)
 
 def setup_logging(
         log_level_console: int = logging.ERROR,
         log_level_file: int = logging.DEBUG,
         logfile: Optional[str] = "logs/app.log",
-        app_logger_names = ["audio","src"]
+        app_logger_names = ["src","__main__"]
     ) -> None:
     """
     Set up application-wide logging with colored console output and rotating file logs

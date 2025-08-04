@@ -4,21 +4,20 @@ warnings.filterwarnings("ignore", module="urllib3")
 import os
 import sys
 import time
-import traceback
+import logging
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 from src.logging_config import setup_logging
-setup_logging()
-
 from src.audio.spotify_controller import SpotifyController
 
+setup_logging()
+logger = logging.getLogger(__name__)
+
 def test_pause(controller: SpotifyController) -> bool:
-    # Pause Playback
-    print("\nPausing playback...")
+    logger.info("Pausing playback...")
     controller.pause()
     time.sleep(2)
 
-    # Verify paused
     paused_playback = controller.spotify.current_playback()
     if paused_playback:
         return not paused_playback.get("is_playing")
@@ -26,12 +25,10 @@ def test_pause(controller: SpotifyController) -> bool:
         raise RuntimeError("No playback info after pause")
 
 def test_play(controller: SpotifyController) -> bool:
-    # Pause Playback
-    print("\nResuming playback...")
+    logger.info("Resuming playback...")
     controller.play()
     time.sleep(2)
 
-    # Verify paused
     paused_playback = controller.spotify.current_playback()
     if paused_playback:
         return paused_playback.get("is_playing")
@@ -45,11 +42,10 @@ def run_test(name, func, **kwargs):
 
 def main():
     try:
+        logger.info("Initializing SpotifyController...")
         controller = SpotifyController()
-        print("Initializing SpotifyController...")
-
         controller.setup()
-        print("Spotify setup successful!")
+        logger.info("Spotify setup successful")
 
         current_playback = controller.spotify.current_playback()
         if current_playback is None:
@@ -63,8 +59,7 @@ def main():
         run_test('Play', test_play, controller = controller)
 
     except Exception as e:
-        print("An error occurred during Spotify integration test:")
-        traceback.print_exc()
+        print(f"An error occurred during Spotify integration test: {e}")
         sys.exit(1)
 
 if __name__ == "__main__":

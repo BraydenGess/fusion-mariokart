@@ -9,7 +9,7 @@ class PlaybackState(Enum):
 
 class BaseAudioController(ABC):
     def __init__(self):
-        self._playback_state = {
+        self._playback_context = {
             "track_id": None,
             "state": PlaybackState.STOPPED,
             "progress_ms": None,

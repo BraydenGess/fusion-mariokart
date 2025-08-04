@@ -9,8 +9,6 @@ from spotipy.oauth2 import SpotifyOAuth
 from .base_audio_controller import BaseAudioController, PlaybackState
 
 logger = logging.getLogger(__name__)
-print("Logger name:", __name__)
-
 
 class SpotifyController(BaseAudioController):
     """
@@ -57,26 +55,14 @@ class SpotifyController(BaseAudioController):
         Starts playback if currently paused
         Updates internal playback state
         """
-        try:
-            playback = self.spotify.current_playback()
-            if playback and not playback.get('is_playing', False):
-                self.spotify.start_playback(device_id = None)
-                self._playback_state["state"] = PlaybackState.PLAYING
-        except spotipy.SpotifyException as e:
-            logger.error("Failed to start playback")
+        self._change_playback_state(action = 'play', target_state = PlaybackState.PLAYING)
 
     def pause(self) -> None:
         """
         Pauses playback if currently paused
         Updates internal playback state
         """
-        try:
-            playback = self.spotify.current_playback()
-            if playback and playback.get('is_playing', False):
-                self.spotify.pause_playback(device_id = None)
-                self._playback_state["state"] = PlaybackState.PAUSED
-        except spotipy.SpotifyException as e:
-            logger.error("Failed to pause playback")
+        self._change_playback_state(action = 'pause', target_state = PlaybackState.PAUSED)
 
     def set_volume(self, volume_level: int) -> None:
         """
@@ -86,3 +72,49 @@ class SpotifyController(BaseAudioController):
             volume_level [int]: Volume level [0-100]
         """
         pass
+
+    def _change_playback_state(self, action: str, target_state: PlaybackState) -> None:
+        """
+        Generic method to change playback context state
+        Args:
+            action [str]: One of 'play' or 'pause'
+            target_state [PlaybackState]: Enum representing the internal playback to set
+        """
+        try:
+            logger.debug("Attempting to %s playback...", action)
+            playback = self.spotify.current_playback()
+
+            if not playback:
+                logger.error("No playback detected; cannot %s", action)
+                return
+
+            is_playing = playback.get("is_playing", False)
+
+            action_conditions = {
+                "pause": is_playing,
+                "play": not is_playing
+            }
+
+            if action not in action_conditions:
+                logger.error("Invalid action: %s", action)
+
+            if not action_conditions[action]:
+                logger.debug("Playback already %sed; no action taken", action)
+                return
+
+            action_methods = {
+                "pause": self.spotify.pause_playback,
+                "play": self.spotify.start_playback
+            }
+
+            logger.debug("Executing '%s' playback action...", action)
+            action_methods[action]()
+            self._playback_context["state"] = target_state
+            logger.debug("Playback successfully changed")
+
+        except spotipy.SpotifyException as e:
+            logging.error("Spotify API error while pausing playback: %e", e)
+        except Exception as e:
+            logging.error("Unexpected error while trying to pause playback: %e", e)
+
+
