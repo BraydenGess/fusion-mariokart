@@ -35,6 +35,11 @@ def test_play(controller: SpotifyController) -> bool:
     else:
         raise RuntimeError("No playback info after play")
 
+def run_test(name, func, **kwargs):
+    result = func(**kwargs)
+    status = "\u2705" if result else "\u274C"
+    print(f"{status} {name} {'Passed' if result else 'Failed'}")
+
 def main():
     try:
         controller = SpotifyController()
@@ -51,17 +56,8 @@ def main():
             is_playing = current_playback.get("is_playing", False)
             print(f"Currently playing: '{track}', Playing status: {is_playing}")
 
-        result = test_pause(controller = controller)
-        if result:
-            print("\u2705 Check Pause Passed")
-        else:
-            print("\u274C X Pause Failed")
-
-        result = test_play(controller=controller)
-        if result:
-            print("\u2705 Play Passed")
-        else:
-            print("\u274C Play Failed")
+        run_test('Pause', test_pause, controller = controller)
+        run_test('Play', test_play, controller = controller)
 
     except Exception as e:
         print("An error occurred during Spotify integration test:")
