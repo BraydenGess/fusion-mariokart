@@ -1,6 +1,25 @@
 from abc import ABC, abstractmethod
+from enum import Enum, auto
+
+class PlaybackState(Enum):
+    PLAYING = auto()
+    PAUSED = auto()
+    STOPPED = auto()
+    BUFFERING = auto()
 
 class BaseAudioController(ABC):
+    def __init__(self):
+        self._playback_state = {
+            "track_id": None,
+            "state": PlaybackState.STOPPED,
+            "progress_ms": None,
+            "timestamp": None,
+        }
+
+    @abstractmethod
+    def setup(self):
+        """Initialize authentication and prepare controller"""
+        pass
 
     @abstractmethod
     def play(self):
