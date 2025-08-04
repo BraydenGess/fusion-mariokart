@@ -1,4 +1,5 @@
 import os
+import logging
 from typing import Optional
 
 from dotenv import load_dotenv
@@ -6,6 +7,10 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
 from .base_audio_controller import BaseAudioController, PlaybackState
+
+logger = logging.getLogger(__name__)
+print("Logger name:", __name__)
+
 
 class SpotifyController(BaseAudioController):
     """
@@ -42,8 +47,10 @@ class SpotifyController(BaseAudioController):
                     scope = self.scope,
                 )
             )
+            logger.info("Spotify OAuth setup complete")
         except Exception as e:
-            raise RuntimeError(f"[Error] Spotify setup failed: {e}")
+            logger.exception("Failed to authenticate with Spotify")
+            raise RuntimeError(f"Spotify setup failed: {e}")
 
     def play(self) -> None:
         """
@@ -56,7 +63,7 @@ class SpotifyController(BaseAudioController):
                 self.spotify.start_playback(device_id = None)
                 self._playback_state["state"] = PlaybackState.PLAYING
         except spotipy.SpotifyException as e:
-            print(f"[Error] Failed to start playback: {e}")
+            logger.error("Failed to start playback")
 
     def pause(self) -> None:
         """
@@ -69,7 +76,7 @@ class SpotifyController(BaseAudioController):
                 self.spotify.pause_playback(device_id = None)
                 self._playback_state["state"] = PlaybackState.PAUSED
         except spotipy.SpotifyException as e:
-            print(f"[Error] Failed to pause playback: {e}")
+            logger.error("Failed to pause playback")
 
     def set_volume(self, volume_level: int) -> None:
         """

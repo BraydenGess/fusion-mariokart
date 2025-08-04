@@ -7,7 +7,10 @@ import time
 import traceback
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
-from audio.spotify_controller import SpotifyController
+from src.logging_config import setup_logging
+setup_logging()
+
+from src.audio.spotify_controller import SpotifyController
 
 def test_pause(controller: SpotifyController) -> bool:
     # Pause Playback
