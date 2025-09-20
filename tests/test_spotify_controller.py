@@ -1,7 +1,7 @@
 import os
 import pytest
 from unittest import mock
-from audio.spotify_controller import SpotifyController
+from audio.controller.spotify_controller import SpotifyController
 
 # Helper: set required env variables
 def set_spotify_env():

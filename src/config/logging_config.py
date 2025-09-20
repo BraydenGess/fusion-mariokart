@@ -17,7 +17,6 @@ def setup_logging(
         log_level_console: int = logging.ERROR,
         log_level_file: int = logging.DEBUG,
         logfile: Optional[str] = "logs/app.log",
-        app_logger_names = ["src","__main__"]
     ) -> None:
     """
     Set up application-wide logging with colored console output and rotating file logs
@@ -68,5 +67,4 @@ def setup_logging(
     )
     file_handler.setFormatter(file_formatter)
     file_handler.setLevel(log_level_file)
-    file_handler.addFilter(NamespaceFilter(app_logger_names))
     root_logger.addHandler(file_handler)

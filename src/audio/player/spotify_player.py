@@ -6,11 +6,11 @@ from dotenv import load_dotenv
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
-from .base_audio_controller import BaseAudioController, PlaybackState
+from .base_audio_player import BaseAudioPlayer, PlaybackState
 
 logger = logging.getLogger(__name__)
 
-class SpotifyController(BaseAudioController):
+class SpotifyPlayer(BaseAudioPlayer):
     """
     A controller to interact with Spotify's Web API for audio playback management.
     Inherits from BaseAudioController and handles authentication, playback state, and controls commands
@@ -152,5 +152,3 @@ class SpotifyController(BaseAudioController):
             logging.error("Spotify API error while pausing playback: %e", e)
         except Exception as e:
             logging.error("Unexpected error while trying to pause playback: %e", e)
-
-

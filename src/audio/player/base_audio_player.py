@@ -7,7 +7,7 @@ class PlaybackState(Enum):
     STOPPED = auto()
     BUFFERING = auto()
 
-class BaseAudioController(ABC):
+class BaseAudioPlayer(ABC):
     def __init__(self):
         self._playback_context = {
             "track_id": None,

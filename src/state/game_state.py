@@ -1,10 +1,18 @@
-from threading import Lock
+import threading
 
 class GameState:
     def __init__(self):
-        self._lock = Lock()
-        self._current_course = None
+        self._lock = threading.Lock()
+        self._state = {
+            "course_name": "None"
+        }
 
-    def set_course(self, course_name: str):
+    def update(self, **kwargs):
         with self._lock:
-            self._current_course = course_name
+            self._state.update(kwargs)
+
+    def get(self, key = None):
+        with self._lock:
+            if key:
+                return self._state.get(key)
+            return self._state.copy()
